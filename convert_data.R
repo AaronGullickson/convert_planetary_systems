@@ -34,8 +34,22 @@ all_system_events <- set_names(all_system_events,
 
 # Test Case ---------------------------------------------------------------
 
-id <- "A Place"
-
+id <- "Graham IV"
 psystem <- read_planetary_system(id)
+cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
 
-cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 6))
+# Process planetary systems -----------------------------------------------
+
+names(all_systems) |>
+  map(function(x) {
+    result <- read_planetary_system(x) |>
+      as.yaml(indent.mapping.sequence = TRUE, precision = 12) |>
+      # this will fix weird error with quoted y keys
+      str_replace("\\'y\\'", "y")
+    
+    file <- file(paste("output/planetary_systems/", x, ".yml", sep = ""), 
+                 "w", 
+                 encoding = "UTF-8")
+    
+    cat(result, file = file, sep = "")
+  })
