@@ -1,9 +1,11 @@
 
 # Functions to read in xml and save in list format ------------------------
 
-read_planetary_system <- function(system_xml) {
+read_planetary_system <- function(id) {
   
-  id <- xml_text(xml_find_first(system_xml, "id"))
+  system_xml <- all_systems[[id]]
+  system_event_xml <- all_system_events[[id]]
+  
   sucsId <- as.numeric(xml_text(xml_find_first(system_xml, "sucsId")))
   x <- as.numeric(xml_text(xml2::xml_find_first(system_xml, "xcood")))
   y <- as.numeric(xml_text(xml_find_first(system_xml, "ycood")))
@@ -17,12 +19,10 @@ read_planetary_system <- function(system_xml) {
                            spectralType = spectralType,
                            primarySlot = primarySlot)
   
-  #system_events <- purrr::map(xml2::xml_find_all(system_xml, "event"),
-  #                            read_event)
-  
-  #if(!purrr::is_empty(system_events)) {
-  #  planetary_system$event <- system_events
-  #}
+  system_events <- map(xml_find_all(system_event_xml, "event"), read_event)
+  if(!is_empty(system_events)) {
+    planetary_system$event <- system_events
+  }
   
   system_planets <- map(xml_find_all(system_xml, "planet"), read_planet)
   if(!is_empty(system_planets)) {
@@ -95,15 +95,15 @@ read_planet <- function(planet_xml) {
 read_event <- function(events_xml) {
   
   # get values
-  values <- xml2::xml_text(xml2::xml_children(events_xml))
+  values <- xml_text(xml_children(events_xml))
   # name the values
-  names(values) <- xml2::xml_name(xml2::xml_children(events_xml))
+  names(values) <- xml_name(xml_children(events_xml))
   # coerce to a list
   values <- as.list(values)
   
   # convert numbers back to numeric values
-  values <- purrr::map(values, function(x) {
-    ifelse(stringr::str_detect(x, "\\D"), x, as.numeric(x))
+  values <- map(values, function(x) {
+    ifelse(str_detect(x, "\\D"), x, as.numeric(x))
   })
   
   return(values)
