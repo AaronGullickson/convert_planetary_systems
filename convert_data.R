@@ -1,11 +1,21 @@
-
-
+# This script will read in the XML files for planetary systems directly from
+# the MekHQ GH repo and will then convert them to separate YAML files for each
+# planetary system. These files will be placed in output/planetary_systems. 
+# Most of the hard-work of this script is in the functions created in the 
+# separate functions.R script which converts the xml data into a set of embedded
+# lists which the yaml library knows how to easily convert into yaml.
 
 # Load libraries and custom functions -------------------------------------
 
 source("check_packages.R")
 source("functions.R")
 
+
+# Remove prior data -------------------------------------------------------
+
+quietly(do.call(file.remove, 
+                list(list.files(here("output", "planetary_systems"), 
+                                full.names = TRUE))))
 
 # Load XML data -----------------------------------------------------------
 

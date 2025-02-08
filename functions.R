@@ -1,10 +1,14 @@
+# These functions will read in a given xml format and turn it into a set of 
+# embedded lists that can be processed by the yaml library.
 
+
+# put key values here that need to be transformed for certain values that 
+# show up in events
 values_logical <- c("nadirCharge", "zenithCharge")
 values_integer <- c("")
 values_double <- c("population")
 
-# Functions to read in xml and save in list format ------------------------
-
+# the primary function
 read_planetary_system <- function(id) {
   
   system_xml <- all_systems[[id]]
@@ -45,9 +49,9 @@ read_planetary_system <- function(id) {
   }
   
   return(planetary_system)
-  
 }
 
+# subfunction for reading in the data for a specific planet
 read_planet <- function(planet_xml) {
   
   name <- xml_text(xml_find_first(planet_xml, "name"))
@@ -103,9 +107,9 @@ read_planet <- function(planet_xml) {
   }
   
   return(planet)
-  
 }
 
+# subfunction for reading in a single event date
 read_event <- function(events_xml) {
   
   # get values
@@ -126,9 +130,9 @@ read_event <- function(events_xml) {
   })
   
   return(values)
-  
 }
 
+# subfunction for reading in satellite data
 read_satellite <- function(satellite_xml) {
   
   name <- xml_text(xml_find_first(satellite_xml, "name"))
@@ -136,5 +140,4 @@ read_satellite <- function(satellite_xml) {
   icon <- xml_text(xml_find_first(satellite_xml, "icon"))
   
   return(list(name = name, size = size, icon = icon))
-  
 }
