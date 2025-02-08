@@ -9,6 +9,7 @@ packages = c(
   "here", # absolute requirement always
   "knitr", # for processing quarto
   "tidyverse", # tidyverse and friends
+  "stringr", # for strings
   "xml2", # for reading in xml
   "yaml" # for writing out yaml
 )
