@@ -79,14 +79,29 @@ read_planet <- function(planet_xml) {
   gravity <- as.numeric(xml_text(xml_find_first(planet_xml, "gravity")))
   if(!is.na(gravity)) { planet$gravity <- gravity }
   
-  dayLength <- as.integer(xml_text(xml_find_first(planet_xml, "dayLength")))
-  if(!is.na(dayLength)) { planet$dayLength <- dayLength }
-  
   diameter <- as.integer(xml_text(xml_find_first(planet_xml, "diameter")))
   if(!is.na(diameter)) { planet$diameter <- diameter }
   
   density <- as.numeric(xml_text(xml_find_first(planet_xml, "density")))
   if(!is.na(density)) { planet$density <- density }
+  
+  dayLength <- as.integer(xml_text(xml_find_first(planet_xml, "dayLength")))
+  if(!is.na(dayLength)) { planet$dayLength <- dayLength }
+  
+  yearLength <- as.integer(xml_text(xml_find_first(planet_xml, "yearLength")))
+  if(!is.na(yearLength)) { planet$yearLength <- yearLength }
+  
+  temperature <- as.integer(xml_text(xml_find_first(planet_xml, "temperature")))
+  if(!is.na(temperature)) { planet$temperature <- temperature }
+  
+  water <- as.integer(xml_text(xml_find_first(planet_xml, "water")))
+  if(!is.na(water)) { planet$water <- water }
+  
+  lifeForm <- xml_text(xml_find_first(planet_xml, "lifeForm"))
+  if(!is.na(lifeForm)) { planet$lifeForm <- lifeForm }
+  
+  description <- xml_text(xml_find_first(planet_xml, "desc"))
+  if(!is.na(description)) { planet$description <- description }
   
   ring <- as.logical(xml_text(xml_find_first(planet_xml, "ring")))
   if(!is.na(ring)) { planet$ring <- ring }
