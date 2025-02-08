@@ -13,9 +13,9 @@ source("functions.R")
 
 # Remove prior data -------------------------------------------------------
 
-quietly(do.call(file.remove, 
-                list(list.files(here("output", "planetary_systems"), 
-                                full.names = TRUE))))
+list.files(here("output", "planetary_systems"), 
+           full.names = TRUE) |>
+  file.remove()
 
 # Load XML data -----------------------------------------------------------
 
