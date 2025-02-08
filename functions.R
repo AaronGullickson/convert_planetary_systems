@@ -100,6 +100,11 @@ read_planet <- function(planet_xml) {
   lifeForm <- xml_text(xml_find_first(planet_xml, "lifeForm"))
   if(!is.na(lifeForm)) { planet$lifeForm <- lifeForm }
   
+  landMasses <- xml_text(xml_find_all(planet_xml, "landMass"))
+  if(!is_empty(landMasses)) { 
+    planet$landMasses <- paste(landMasses, collapse = ", ")
+  }
+  
   description <- xml_text(xml_find_first(planet_xml, "desc"))
   if(!is.na(description)) { planet$description <- description }
   
