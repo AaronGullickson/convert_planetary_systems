@@ -62,4 +62,5 @@ names(all_systems) |>
                  encoding = "UTF-8")
     
     cat(result, file = file, sep = "")
+    close(file)
   })
