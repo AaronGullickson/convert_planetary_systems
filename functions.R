@@ -54,7 +54,7 @@ read_planet <- function(planet_xml) {
   
   planet <- list(name = name,
                  type = type,
-                 orbital_dist = orbitalDist,
+                 orbitalDist = orbitalDist,
                  sysPos = sysPos,
                  icon = icon)
   
