@@ -34,9 +34,9 @@ all_system_events <- set_names(all_system_events,
 
 # Test Case ---------------------------------------------------------------
 
-id <- "Graham IV"
-psystem <- read_planetary_system(id)
-cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
+#id <- "Graham IV"
+#psystem <- read_planetary_system(id)
+#cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
 
 # Process planetary systems -----------------------------------------------
 
