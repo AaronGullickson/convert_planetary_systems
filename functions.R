@@ -6,11 +6,11 @@ read_planetary_system <- function(id) {
   system_xml <- all_systems[[id]]
   system_event_xml <- all_system_events[[id]]
   
-  sucsId <- as.numeric(xml_text(xml_find_first(system_xml, "sucsId")))
+  sucsId <- as.integer(xml_text(xml_find_first(system_xml, "sucsId")))
   x <- as.numeric(xml_text(xml2::xml_find_first(system_xml, "xcood")))
   y <- as.numeric(xml_text(xml_find_first(system_xml, "ycood")))
   spectralType <- xml_text(xml_find_first(system_xml, "spectralType"))
-  primarySlot <- as.numeric(xml_text(xml_find_first(system_xml, "primarySlot")))
+  primarySlot <- as.integer(xml_text(xml_find_first(system_xml, "primarySlot")))
   
   planetary_system <- list(id = id,
                            sucsId = sucsId,
@@ -49,7 +49,7 @@ read_planet <- function(planet_xml) {
   name <- xml_text(xml_find_first(planet_xml, "name"))
   type <- xml_text(xml_find_first(planet_xml, "type"))
   orbitalDist <- as.numeric(xml_text(xml_find_first(planet_xml, "orbitalDist")))
-  sysPos <- as.numeric(xml_text(xml_find_first(planet_xml, "sysPos")))
+  sysPos <- as.integer(xml_text(xml_find_first(planet_xml, "sysPos")))
   icon <- xml_text(xml_find_first(planet_xml, "icon"))
   
   planet <- list(name = name,
@@ -71,19 +71,19 @@ read_planet <- function(planet_xml) {
   gravity <- as.numeric(xml_text(xml_find_first(planet_xml, "gravity")))
   if(!is.na(gravity)) { planet$gravity <- gravity }
   
-  dayLength <- as.numeric(xml_text(xml_find_first(planet_xml, "dayLength")))
+  dayLength <- as.integer(xml_text(xml_find_first(planet_xml, "dayLength")))
   if(!is.na(dayLength)) { planet$dayLength <- dayLength }
   
-  diameter <- as.numeric(xml_text(xml_find_first(planet_xml, "diameter")))
+  diameter <- as.integer(xml_text(xml_find_first(planet_xml, "diameter")))
   if(!is.na(diameter)) { planet$diameter <- diameter }
   
   density <- as.numeric(xml_text(xml_find_first(planet_xml, "density")))
   if(!is.na(density)) { planet$density <- density }
   
-  ring <- xml_text(xml_find_first(planet_xml, "ring"))
+  ring <- as.logical(xml_text(xml_find_first(planet_xml, "ring")))
   if(!is.na(ring)) { planet$ring <- ring }
   
-  smallMoons <- as.numeric(xml_text(xml_find_first(planet_xml, "smallMoons")))
+  smallMoons <- as.integer(xml_text(xml_find_first(planet_xml, "smallMoons")))
   if(!is.na(smallMoons)) { planet$smallMoons <- smallMoons }
   
   # check for satellites
@@ -111,8 +111,8 @@ read_event <- function(events_xml) {
   # coerce to a list
   values <- as.list(values)
   
-  # convert numbers back to numeric values
   values <- map(values, function(x) {
+    # convert numbers back to numeric values
     ifelse(str_detect(x, "\\D"), x, as.numeric(x))
   })
   
