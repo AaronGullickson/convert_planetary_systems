@@ -1,16 +1,14 @@
 
 # Functions to read in xml and save in list format ------------------------
 
-read_planetary_system <- function(file) {
+read_planetary_system <- function(system_xml) {
   
-  system_xml <- xml2::read_xml(file)
-  
-  id <- xml2::xml_text(xml2::xml_find_first(system_xml, "id"))
-  sucsId <- as.numeric(xml2::xml_text(xml2::xml_find_first(system_xml, "sucsId")))
-  x <- as.numeric(xml2::xml_text(xml2::xml_find_first(system_xml, "xcood")))
-  y <- as.numeric(xml2::xml_text(xml2::xml_find_first(system_xml, "ycood")))
-  spectralType <- xml2::xml_text(xml2::xml_find_first(system_xml, "spectralType"))
-  primarySlot <- as.numeric(xml2::xml_text(xml2::xml_find_first(system_xml, "primarySlot")))
+  id <- xml_text(xml_find_first(system_xml, "id"))
+  sucsId <- as.numeric(xml_text(xml_find_first(system_xml, "sucsId")))
+  x <- as.numeric(xml_text(xml2::xml_find_first(system_xml, "xcood")))
+  y <- as.numeric(xml_text(xml_find_first(system_xml, "ycood")))
+  spectralType <- xml_text(xml_find_first(system_xml, "spectralType"))
+  primarySlot <- as.numeric(xml_text(xml_find_first(system_xml, "primarySlot")))
   
   planetary_system <- list(id = id,
                            sucsId = sucsId,
@@ -19,17 +17,15 @@ read_planetary_system <- function(file) {
                            spectralType = spectralType,
                            primarySlot = primarySlot)
   
-  system_events <- purrr::map(xml2::xml_find_all(system_xml, "event"),
-                              read_event)
+  #system_events <- purrr::map(xml2::xml_find_all(system_xml, "event"),
+  #                            read_event)
   
-  if(!purrr::is_empty(system_events)) {
-    planetary_system$event <- system_events
-  }
+  #if(!purrr::is_empty(system_events)) {
+  #  planetary_system$event <- system_events
+  #}
   
-  system_planets <- purrr::map(xml2::xml_find_all(system_xml, "planet"),
-                               read_planet)
-  
-  if(!purrr::is_empty(system_planets)) {
+  system_planets <- map(xml_find_all(system_xml, "planet"), read_planet)
+  if(!is_empty(system_planets)) {
     planetary_system$planet <- system_planets
   }
   
@@ -39,11 +35,11 @@ read_planetary_system <- function(file) {
 
 read_planet <- function(planet_xml) {
   
-  name <- xml2::xml_text(xml2::xml_find_first(planet_xml, "name"))
-  type <- xml2::xml_text(xml2::xml_find_first(planet_xml, "type"))
-  orbitalDist <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "orbitalDist")))
-  sysPos <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "sysPos")))
-  icon <- xml2::xml_text(xml2::xml_find_first(planet_xml, "icon"))
+  name <- xml_text(xml_find_first(planet_xml, "name"))
+  type <- xml_text(xml_find_first(planet_xml, "type"))
+  orbitalDist <- as.numeric(xml_text(xml_find_first(planet_xml, "orbitalDist")))
+  sysPos <- as.numeric(xml_text(xml_find_first(planet_xml, "sysPos")))
+  icon <- xml_text(xml_find_first(planet_xml, "icon"))
   
   planet <- list(name = name,
                  type = type,
@@ -52,48 +48,45 @@ read_planet <- function(planet_xml) {
                  icon = icon)
   
   # these ones may or may not be present
-  pressure <- xml2::xml_text(xml2::xml_find_first(planet_xml, "pressure"))
+  pressure <- xml_text(xml_find_first(planet_xml, "pressure"))
   if(!is.na(pressure)) { planet$pressure <- pressure }
   
-  atmosphere <- xml2::xml_text(xml2::xml_find_first(planet_xml, "atmosphere"))
+  atmosphere <- xml_text(xml_find_first(planet_xml, "atmosphere"))
   if(!is.na(atmosphere)) { planet$atmosphere <- atmosphere }
   
-  composition <- xml2::xml_text(xml2::xml_find_first(planet_xml, "composition"))
+  composition <- xml_text(xml_find_first(planet_xml, "composition"))
   if(!is.na(composition)) { planet$composition <- composition }
   
-  gravity <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "gravity")))
+  gravity <- as.numeric(xml_text(xml_find_first(planet_xml, "gravity")))
   if(!is.na(gravity)) { planet$gravity <- gravity }
   
-  dayLength <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "dayLength")))
+  dayLength <- as.numeric(xml_text(xml_find_first(planet_xml, "dayLength")))
   if(!is.na(dayLength)) { planet$dayLength <- dayLength }
   
-  diameter <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "diameter")))
+  diameter <- as.numeric(xml_text(xml_find_first(planet_xml, "diameter")))
   if(!is.na(diameter)) { planet$diameter <- diameter }
   
-  density <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "density")))
+  density <- as.numeric(xml_text(xml_find_first(planet_xml, "density")))
   if(!is.na(density)) { planet$density <- density }
   
-  ring <- xml2::xml_text(xml2::xml_find_first(planet_xml, "ring"))
+  ring <- xml_text(xml_find_first(planet_xml, "ring"))
   if(!is.na(ring)) { planet$ring <- ring }
   
-  smallMoons <- as.numeric(xml2::xml_text(xml2::xml_find_first(planet_xml, "smallMoons")))
+  smallMoons <- as.numeric(xml_text(xml_find_first(planet_xml, "smallMoons")))
   if(!is.na(smallMoons)) { planet$smallMoons <- smallMoons }
   
   # check for satellites
-  satellites <- purrr::map(xml2::xml_find_all(planet_xml, "satellite"),
-                           read_satellite)
-  
-  if(!purrr::is_empty(satellites)) {
+  satellites <- map(xml_find_all(planet_xml, "satellite"), read_satellite)
+  if(!is_empty(satellites)) {
     planet$satellite = satellites
   }
   
   # now look for planetary events and add them
-  planet_events <- purrr::map(xml2::xml_find_all(planet_xml, "event"),
-                              read_event)
-  
-  if(!purrr::is_empty(planet_events)) {
-    planet$event = planet_events
-  }
+  #planet_events <- purrr::map(xml2::xml_find_all(planet_xml, "event"),
+  #                            read_event)
+  #if(!purrr::is_empty(planet_events)) {
+  #  planet$event = planet_events
+  #}
   
   return(planet)
   
@@ -119,9 +112,9 @@ read_event <- function(events_xml) {
 
 read_satellite <- function(satellite_xml) {
   
-  name <- xml2::xml_text(xml2::xml_find_first(satellite_xml, "name"))
-  size <- xml2::xml_text(xml2::xml_find_first(satellite_xml, "size"))
-  icon <- xml2::xml_text(xml2::xml_find_first(satellite_xml, "icon"))
+  name <- xml_text(xml_find_first(satellite_xml, "name"))
+  size <- xml_text(xml_find_first(satellite_xml, "size"))
+  icon <- xml_text(xml_find_first(satellite_xml, "icon"))
   
   return(list(name = name, size = size, icon = icon))
   
