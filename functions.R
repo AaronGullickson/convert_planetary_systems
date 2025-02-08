@@ -1,4 +1,8 @@
 
+values_logical <- c("nadirCharge", "zenithCharge")
+values_integer <- c("")
+values_double <- c("population")
+
 # Functions to read in xml and save in list format ------------------------
 
 read_planetary_system <- function(id) {
@@ -106,14 +110,19 @@ read_event <- function(events_xml) {
   
   # get values
   values <- xml_text(xml_children(events_xml))
+  # get name of element
+  element_names <- xml_name(xml_children(events_xml))
   # name the values
-  names(values) <- xml_name(xml_children(events_xml))
+  names(values) <- element_names
   # coerce to a list
   values <- as.list(values)
   
-  values <- map(values, function(x) {
-    # convert numbers back to numeric values
-    ifelse(str_detect(x, "\\D"), x, as.numeric(x))
+  # convert values to appropriate types as needed - default is character string
+  values <- map2(values, as.list(element_names), function(x, y) {
+    x <- ifelse(y %in% values_logical, as.logical(x), x)
+    x <- ifelse(y %in% values_double, as.double(x), x)
+    x <- ifelse(y %in% values_integer, as.integer(x), x)
+    return(x)
   })
   
   return(values)
