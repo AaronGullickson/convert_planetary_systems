@@ -24,7 +24,18 @@ read_planetary_system <- function(id) {
     planetary_system$event <- system_events
   }
   
-  system_planets <- map(xml_find_all(system_xml, "planet"), read_planet)
+  # insert planet events into planet xml
+  planets <- xml_find_all(system_xml, "planet")
+  planet_events <- xml_find_all(system_event_xml, "planet")
+  for(i in 1:length(planet_events)) {
+    sysPos <- as.numeric(xml_text(xml_find_first(planet_events[[i]], "sysPos")))
+    current_events <- xml_find_all(planet_events[[i]], "event")
+    for(event in current_events) {
+      xml_add_child(planets[[sysPos]], event)
+    }
+  }
+  
+  system_planets <- map(planets, read_planet)
   if(!is_empty(system_planets)) {
     planetary_system$planet <- system_planets
   }
@@ -82,11 +93,10 @@ read_planet <- function(planet_xml) {
   }
   
   # now look for planetary events and add them
-  #planet_events <- purrr::map(xml2::xml_find_all(planet_xml, "event"),
-  #                            read_event)
-  #if(!purrr::is_empty(planet_events)) {
-  #  planet$event = planet_events
-  #}
+  planet_events <- map(xml_find_all(planet_xml, "event"), read_event)
+  if(!is_empty(planet_events)) {
+    planet$event = planet_events
+  }
   
   return(planet)
   
