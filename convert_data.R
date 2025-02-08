@@ -50,6 +50,10 @@ all_system_events <- set_names(all_system_events,
 
 # Process planetary systems -----------------------------------------------
 
+# check to make sure cleaning won't produce dupes
+y <- make_clean_names(names(all_systems), allow_dupes = TRUE)
+sum(duplicated(y))
+
 names(all_systems) |>
   map(function(x) {
     result <- read_planetary_system(x) |>
@@ -57,7 +61,12 @@ names(all_systems) |>
       # this will fix weird error with quoted y keys
       str_replace("\\'y\\'", "y")
     
-    file <- file(paste("output/planetary_systems/", x, ".yml", sep = ""), 
+    file_name <- paste("output/planetary_systems/",
+                       make_clean_names(x, case = "big_camel"),
+                       ".yml",
+                       sep = "")
+    
+    file <- file(file_name, 
                  "w", 
                  encoding = "UTF-8")
     
