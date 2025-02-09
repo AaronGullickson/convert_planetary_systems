@@ -52,8 +52,10 @@ read_value <- function(xml_data, value_name) {
   # do we need to split this into source and value?
   if(value_name %in% values_sourceable) {
     source <- xml_attr(value_node, "source")
-    if(is.na(source)) {
-      source <- "noncanon"
+    if(is.na(source) || source == "noncanon") {
+      # if there is no source or its noncanon, we treat that as default
+      # and do not write it out in full
+      return(value)
     }
     return(list(source = source, value = value))
   } else {
