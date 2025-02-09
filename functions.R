@@ -26,8 +26,7 @@ planet_optional <- c("pressure", "atmosphere", "composition", "gravity",
                      "temperature", "water", "lifeForm", "desc", "ring",
                      "smallMoons")
 
-# TODO: figure out landmass which needs an additional hack-ey check
-
+# read an individual calue from xml node and determine how to display it in yaml
 read_value <- function(xml_data, value_name) {
   
   value_node <- xml_data |>
@@ -140,6 +139,12 @@ read_planet <- function(planet_xml) {
     }
   }
   
+  # check for landmasses
+  landmasses <- map(xml_find_all(planet_xml, "landMass"), read_landmass)
+  if(!is_empty(landmasses)) {
+    planet$landmass = landmasses
+  }
+  
   # check for satellites
   satellites <- map(xml_find_all(planet_xml, "satellite"), read_satellite)
   if(!is_empty(satellites)) {
@@ -168,6 +173,32 @@ read_event <- function(events_xml) {
   }
   
   return(events)
+}
+
+# subfunction for reading in landmass data
+read_landmass <- function(landmass_xml) {
+  
+  landmass_str <- xml_text(landmass_xml)
+  source <- xml_attr(landmass_xml, "source")
+  
+  # we may need to split landmass into name and capital city
+  name <- str_extract(landmass_str, "^[^\\(]+") |> str_trim()
+  capital <- str_extract(landmass_str, "(?<=\\().*?(?=\\))")
+  
+  if(is.na(source) || source == "noncanon") {
+    if(is.na(capital)) {
+      return(list(name = name))
+    } else {
+      return(list(name = name, capital = capital))
+    }
+  } else {
+    if(is.na(capital)) {
+      return(list(name = list(source = source, value = name)))
+    } else {
+      return(list(name = list(source = source, value = name),
+                  capital = list(source = source, value = capital)))
+    }
+  }
 }
 
 # subfunction for reading in satellite data
