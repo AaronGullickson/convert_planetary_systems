@@ -2,32 +2,85 @@
 # embedded lists that can be processed by the yaml library.
 
 
+# key values in this vector should be split into a source and value pair
+values_sourceable <- c("nadirCharge", "zenithCharge", "ring", 
+                       "sysPos", "diameter", "dayLength", "temperature",
+                       "water", "smallMoons", "gravity", "population", 
+                       "density", "yearLength", "spectralType", "name", "type", 
+                       "pressure", "atmosphere", "composition", "lifeForm",
+                       "size")
+
 # put key values here that need to be transformed for certain values that 
 # show up in events
-values_logical <- c("nadirCharge", "zenithCharge")
-values_integer <- c("")
-values_double <- c("population")
+values_logical <- c("nadirCharge", "zenithCharge", "ring")
+values_integer <- c("sucsId", "primarySlot", "sysPos", "diameter", "dayLength", 
+                    "temperature", "water", "smallMoons")
+values_double <- c("xcood", "ycood", "orbitalDist", "gravity", "population", 
+                   "density", "yearLength")
+
+
+# these are the planet characteristics which may or may not be present so
+# we need to add them to the base planet characteristics
+planet_optional <- c("pressure", "atmosphere", "composition", "gravity",
+                     "diameter", "density", "dayLength", "yearLength",
+                     "temperature", "water", "lifeForm", "desc", "ring",
+                     "smallMoons")
+
+# TODO: figure out landmass which needs an additional hack-ey check
+
+read_value <- function(xml_data, value_name) {
+  
+  value_node <- xml_data |>
+    xml_find_first(value_name)
+  
+  value <- value_node |>
+    xml_text()
+  
+  if(is.na(value)) {
+    return(NA)
+  }
+  
+  # does the value need to changed from character?
+  if(value_name %in% values_logical) {
+    value <- as.logical(value)
+  } else if(value_name %in% values_integer) {
+    value <- as.integer(value)
+  } else if(value_name %in% values_double) {
+    value <- as.double(value)  
+  }
+  
+  # do we need to split this into source and value?
+  if(value_name %in% values_sourceable) {
+    source <- xml_attr(value_node, "source")
+    if(is.na(source)) {
+      source <- "noncanon"
+    }
+    return(list(source = source, value = value))
+  } else {
+    return(value)
+  }
+  
+}
 
 # the primary function
 read_planetary_system <- function(id) {
   
+  # retrieve the system information
   system_xml <- all_systems[[id]]
   system_event_xml <- all_system_events[[id]]
   system_name_change_xml <- all_system_name_change[[id]]
+
+  # start the planetary system list with basic information
+  planetary_system <- list(
+    id = id,
+    sucsId = read_value(system_xml, "sucsId"),
+    xcood = read_value(system_xml, "xcood"),
+    ycood = read_value(system_xml, "ycood"),
+    spectralType = read_value(system_xml, "spectralType"),
+    primarySlot = read_value(system_xml, "primarySlot")
+  )
   
-  sucsId <- as.integer(xml_text(xml_find_first(system_xml, "sucsId")))
-  x <- as.numeric(xml_text(xml2::xml_find_first(system_xml, "xcood")))
-  y <- as.numeric(xml_text(xml_find_first(system_xml, "ycood")))
-  spectralType <- xml_text(xml_find_first(system_xml, "spectralType"))
-  primarySlot <- as.integer(xml_text(xml_find_first(system_xml, "primarySlot")))
-  
-  planetary_system <- list(id = id,
-                           sucsId = sucsId,
-                           x = x,
-                           y = y,
-                           spectralType = spectralType,
-                           primarySlot = primarySlot)
-  
+  # add system-level events
   system_events <- map(xml_find_all(system_event_xml, "event"), read_event)
   if(!is_empty(system_events)) {
     planetary_system$event <- system_events
@@ -56,6 +109,7 @@ read_planetary_system <- function(id) {
     }
   }
   
+  # add planet information
   system_planets <- map(planets, read_planet)
   if(!is_empty(system_planets)) {
     planetary_system$planet <- system_planets
@@ -67,65 +121,22 @@ read_planetary_system <- function(id) {
 # subfunction for reading in the data for a specific planet
 read_planet <- function(planet_xml) {
   
-  name <- xml_text(xml_find_first(planet_xml, "name"))
-  type <- xml_text(xml_find_first(planet_xml, "type"))
-  orbitalDist <- as.numeric(xml_text(xml_find_first(planet_xml, "orbitalDist")))
-  sysPos <- as.integer(xml_text(xml_find_first(planet_xml, "sysPos")))
-  icon <- xml_text(xml_find_first(planet_xml, "icon"))
-  
-  planet <- list(name = name,
-                 type = type,
-                 orbitalDist = orbitalDist,
-                 sysPos = sysPos,
-                 icon = icon)
+  # start planet list with the basics
+  planet <- list(
+    name = read_value(planet_xml, "name"),
+    type = read_value(planet_xml, "type"),
+    orbitalDist = read_value(planet_xml, "orbitalDist"),
+    sysPos = read_value(planet_xml, "sysPos"),
+    icon = read_value(planet_xml, "icon")
+  )
   
   # these ones may or may not be present
-  pressure <- xml_text(xml_find_first(planet_xml, "pressure"))
-  if(!is.na(pressure)) { planet$pressure <- pressure }
-  
-  atmosphere <- xml_text(xml_find_first(planet_xml, "atmosphere"))
-  if(!is.na(atmosphere)) { planet$atmosphere <- atmosphere }
-  
-  composition <- xml_text(xml_find_first(planet_xml, "composition"))
-  if(!is.na(composition)) { planet$composition <- composition }
-  
-  gravity <- as.numeric(xml_text(xml_find_first(planet_xml, "gravity")))
-  if(!is.na(gravity)) { planet$gravity <- gravity }
-  
-  diameter <- as.integer(xml_text(xml_find_first(planet_xml, "diameter")))
-  if(!is.na(diameter)) { planet$diameter <- diameter }
-  
-  density <- as.numeric(xml_text(xml_find_first(planet_xml, "density")))
-  if(!is.na(density)) { planet$density <- density }
-  
-  dayLength <- as.integer(xml_text(xml_find_first(planet_xml, "dayLength")))
-  if(!is.na(dayLength)) { planet$dayLength <- dayLength }
-  
-  yearLength <- as.double(xml_text(xml_find_first(planet_xml, "yearLength")))
-  if(!is.na(yearLength)) { planet$yearLength <- yearLength }
-  
-  temperature <- as.integer(xml_text(xml_find_first(planet_xml, "temperature")))
-  if(!is.na(temperature)) { planet$temperature <- temperature }
-  
-  water <- as.integer(xml_text(xml_find_first(planet_xml, "water")))
-  if(!is.na(water)) { planet$water <- water }
-  
-  lifeForm <- xml_text(xml_find_first(planet_xml, "lifeForm"))
-  if(!is.na(lifeForm)) { planet$lifeForm <- lifeForm }
-  
-  landMasses <- xml_text(xml_find_all(planet_xml, "landMass"))
-  if(!is_empty(landMasses)) { 
-    planet$landMasses <- paste(landMasses, collapse = ", ")
+  for(planet_characteristic in planet_optional) {
+    planet_value <- read_value(planet_xml, planet_characteristic)
+    if(length(planet_value) > 1 || !is.na(planet_value)) {
+      planet[[planet_characteristic]] <- planet_value
+    }
   }
-  
-  description <- xml_text(xml_find_first(planet_xml, "desc"))
-  if(!is.na(description)) { planet$description <- description }
-  
-  ring <- as.logical(xml_text(xml_find_first(planet_xml, "ring")))
-  if(!is.na(ring)) { planet$ring <- ring }
-  
-  smallMoons <- as.integer(xml_text(xml_find_first(planet_xml, "smallMoons")))
-  if(!is.na(smallMoons)) { planet$smallMoons <- smallMoons }
   
   # check for satellites
   satellites <- map(xml_find_all(planet_xml, "satellite"), read_satellite)
@@ -168,9 +179,9 @@ read_event <- function(events_xml) {
 # subfunction for reading in satellite data
 read_satellite <- function(satellite_xml) {
   
-  name <- xml_text(xml_find_first(satellite_xml, "name"))
-  size <- xml_text(xml_find_first(satellite_xml, "size"))
-  icon <- xml_text(xml_find_first(satellite_xml, "icon"))
+  name <- read_value(satellite_xml, "name")
+  size <- read_value(satellite_xml, "size")
+  icon <- read_value(satellite_xml, "icon")
   
   return(list(name = name, size = size, icon = icon))
 }
