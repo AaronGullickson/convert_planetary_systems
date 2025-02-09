@@ -88,7 +88,7 @@ read_planet <- function(planet_xml) {
   dayLength <- as.integer(xml_text(xml_find_first(planet_xml, "dayLength")))
   if(!is.na(dayLength)) { planet$dayLength <- dayLength }
   
-  yearLength <- as.integer(xml_text(xml_find_first(planet_xml, "yearLength")))
+  yearLength <- as.double(xml_text(xml_find_first(planet_xml, "yearLength")))
   if(!is.na(yearLength)) { planet$yearLength <- yearLength }
   
   temperature <- as.integer(xml_text(xml_find_first(planet_xml, "temperature")))
