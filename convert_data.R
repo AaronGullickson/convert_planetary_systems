@@ -49,7 +49,7 @@ all_system_name_change <- set_names(all_system_name_change,
 
 # Test Case ---------------------------------------------------------------
 
-#d <- "Adhara (Trip 3040+)"
+#d <- "A Place"
 #psystem <- read_planetary_system(id)
 #cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
 

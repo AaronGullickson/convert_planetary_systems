@@ -35,20 +35,24 @@ read_planetary_system <- function(id) {
   
   # insert planet events into planet xml
   planets <- xml_find_all(system_xml, "planet")
-  planet_events <- xml_find_all(system_event_xml, "planet")
-  for(i in 1:length(planet_events)) {
-    sysPos <- as.numeric(xml_text(xml_find_first(planet_events[[i]], "sysPos")))
-    current_events <- xml_find_all(planet_events[[i]], "event")
-    for(event in current_events) {
-      xml_add_child(planets[[sysPos]], event)
+  if(!is.null(system_event_xml)) {
+    planet_events <- xml_find_all(system_event_xml, "planet")
+    for(i in 1:length(planet_events)) {
+      sysPos <- as.numeric(xml_text(xml_find_first(planet_events[[i]], "sysPos")))
+      current_events <- xml_find_all(planet_events[[i]], "event")
+      for(event in current_events) {
+        xml_add_child(planets[[sysPos]], event)
+      }
     }
   }
-  planet_name_change <- xml_find_all(system_name_change_xml, "planet")
-  for(i in 1:length(planet_events)) {
-    sysPos <- as.numeric(xml_text(xml_find_first(planet_name_change[[i]], "sysPos")))
-    current_name_change <- xml_find_all(planet_name_change[[i]], "event")
-    for(name_change in current_name_change) {
-      xml_add_child(planets[[sysPos]], name_change)
+  if(!is.null(system_name_change_xml)) {
+    planet_name_change <- xml_find_all(system_name_change_xml, "planet")
+    for(i in 1:length(planet_name_change)) {
+      sysPos <- as.numeric(xml_text(xml_find_first(planet_name_change[[i]], "sysPos")))
+      current_name_change <- xml_find_all(planet_name_change[[i]], "event")
+      for(name_change in current_name_change) {
+        xml_add_child(planets[[sysPos]], name_change)
+      }
     }
   }
   
