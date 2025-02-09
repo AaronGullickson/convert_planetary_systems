@@ -21,8 +21,7 @@ list.files(here("output", "planetary_systems"),
 
 all_systems <- read_xml("https://github.com/MegaMek/mekhq/raw/refs/heads/master/MekHQ/data/universe/systems.xml")
 all_system_events <- read_xml("https://github.com/MegaMek/mekhq/raw/refs/heads/master/MekHQ/data/universe/planetary_systems/system_events.xml")
-# TODO: there is something bad in this XML 
-#system_name_change <- read_xml("https://github.com/MegaMek/mekhq/blob/master/MekHQ/data/universe/planetary_systems/system_namechanges.xml")
+all_system_name_change <- read_xml("https://raw.githubusercontent.com/MegaMek/mekhq/refs/heads/master/MekHQ/data/universe/planetary_systems/system_namechanges.xml")
 all_system_connectors <- read_xml("https://github.com/MegaMek/mekhq/raw/refs/heads/master/MekHQ/data/universe/planetary_systems/system_connectors.xml")
 
 
@@ -31,6 +30,8 @@ all_system_connectors <- read_xml("https://github.com/MegaMek/mekhq/raw/refs/hea
 # get children for all
 all_systems <- xml_children(all_systems)
 all_system_events <- xml_children(all_system_events)
+all_system_name_change <- xml_children(all_system_name_change)
+
 
 # name lists by id
 all_systems <- set_names(all_systems, 
@@ -41,10 +42,14 @@ all_system_events <- set_names(all_system_events,
                                map_vec(all_system_events, function(x) {
                                  return(xml_text(xml_find_first(x, "id")))
                                }))
+all_system_name_change <- set_names(all_system_name_change, 
+                                    map_vec(all_system_name_change, function(x) {
+                                      return(xml_text(xml_find_first(x, "id")))
+                                    }))
 
 # Test Case ---------------------------------------------------------------
 
-#id <- "Graham IV"
+#d <- "Adhara (Trip 3040+)"
 #psystem <- read_planetary_system(id)
 #cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
 

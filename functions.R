@@ -13,6 +13,7 @@ read_planetary_system <- function(id) {
   
   system_xml <- all_systems[[id]]
   system_event_xml <- all_system_events[[id]]
+  system_name_change_xml <- all_system_name_change[[id]]
   
   sucsId <- as.integer(xml_text(xml_find_first(system_xml, "sucsId")))
   x <- as.numeric(xml_text(xml2::xml_find_first(system_xml, "xcood")))
@@ -40,6 +41,14 @@ read_planetary_system <- function(id) {
     current_events <- xml_find_all(planet_events[[i]], "event")
     for(event in current_events) {
       xml_add_child(planets[[sysPos]], event)
+    }
+  }
+  planet_name_change <- xml_find_all(system_name_change_xml, "planet")
+  for(i in 1:length(planet_events)) {
+    sysPos <- as.numeric(xml_text(xml_find_first(planet_name_change[[i]], "sysPos")))
+    current_name_change <- xml_find_all(planet_name_change[[i]], "event")
+    for(name_change in current_name_change) {
+      xml_add_child(planets[[sysPos]], name_change)
     }
   }
   
