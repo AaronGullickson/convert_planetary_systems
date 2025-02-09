@@ -3,12 +3,12 @@
 
 
 # key values in this vector should be split into a source and value pair
-values_sourceable <- c("nadirCharge", "zenithCharge", "ring", 
-                       "sysPos", "diameter", "dayLength", "temperature",
-                       "water", "smallMoons", "gravity", "population", 
-                       "density", "yearLength", "spectralType", "name", "type", 
+values_sourceable <- c("ring", "sysPos", "diameter", "dayLength", "temperature",
+                       "water", "smallMoons", "gravity", "density", 
+                       "yearLength", "spectralType", "name", "type", 
                        "pressure", "atmosphere", "composition", "lifeForm",
-                       "size")
+                       "size", "faction", "population", "hpg", 
+                       "socioIndustrial", "nadirCharge", "zenithCharge")
 
 # put key values here that need to be transformed for certain values that 
 # show up in events
@@ -156,24 +156,16 @@ read_planet <- function(planet_xml) {
 # subfunction for reading in a single event date
 read_event <- function(events_xml) {
   
-  # get values
-  values <- xml_text(xml_children(events_xml))
-  # get name of element
+  # get name of each lement
   element_names <- xml_name(xml_children(events_xml))
-  # name the values
-  names(values) <- element_names
-  # coerce to a list
-  values <- as.list(values)
   
-  # convert values to appropriate types as needed - default is character string
-  values <- map2(values, as.list(element_names), function(x, y) {
-    x <- ifelse(y %in% values_logical, as.logical(x), x)
-    x <- ifelse(y %in% values_double, as.double(x), x)
-    x <- ifelse(y %in% values_integer, as.integer(x), x)
-    return(x)
-  })
+  # read in values to a list
+  events <- list()
+  for(element_name in element_names) {
+    events[[element_name]] <- read_value(events_xml, element_name)
+  }
   
-  return(values)
+  return(events)
 }
 
 # subfunction for reading in satellite data
