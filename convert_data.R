@@ -49,7 +49,7 @@ all_system_name_change <- set_names(all_system_name_change,
 
 # Test Case ---------------------------------------------------------------
 
-#d <- "A Place"
+#id <- "Graham IV"
 #psystem <- read_planetary_system(id)
 #cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
 
@@ -62,9 +62,7 @@ sum(duplicated(y))
 names(all_systems) |>
   map(function(x) {
     result <- read_planetary_system(x) |>
-      as.yaml(indent.mapping.sequence = TRUE, precision = 12) |>
-      # this will fix weird error with quoted y keys
-      str_replace("\\'y\\'", "y")
+      as.yaml(indent.mapping.sequence = TRUE, precision = 12)
     
     file_name <- paste("output/planetary_systems/",
                        make_clean_names(x, case = "big_camel"),
