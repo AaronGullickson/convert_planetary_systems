@@ -8,7 +8,8 @@ values_sourceable <- c("ring", "sysPos", "diameter", "dayLength", "temperature",
                        "yearLength", "spectralType", "name", "type", 
                        "pressure", "atmosphere", "composition", "lifeForm",
                        "size", "faction", "population", "hpg", 
-                       "socioIndustrial", "nadirCharge", "zenithCharge")
+                       "socioIndustrial", "nadirCharge", "zenithCharge",
+                       "hiringHall")
 
 # put key values here that need to be transformed for certain values that 
 # show up in events
