@@ -74,7 +74,20 @@ read_value <- function(xml_data, value_name) {
       str_to_upper() |>
       str_replace("POISONOUS$", "POISON") |>
       str_replace("FLAMMABLE$", "FLAME")
-    
+  }
+  
+  if(value_name == "type") {
+    value <- value |>
+      str_replace(" ", "_") |>
+      str_to_upper()
+  }
+  
+  if(value_name == "pressure") {
+    value <- value |>
+      str_replace(" ", "_") |>
+      str_to_upper() |>
+      str_replace("^LOW$", "THIN") |>
+      str_replace("^NORMAL$", "STANDARD")
   }
   
   #do we need to split this into source and value?
