@@ -27,6 +27,10 @@ planet_optional <- c("pressure", "atmosphere", "composition", "gravity",
                      "temperature", "water", "lifeForm", "desc", "ring",
                      "smallMoons")
 
+atmo_converter <- c(
+  ""
+)
+
 # read an individual calue from xml node and determine how to display it in yaml
 read_value <- function(xml_data, value_name) {
   
@@ -55,6 +59,25 @@ read_value <- function(xml_data, value_name) {
     value <- value |> str_split_1(",") |>
       str_trim() |>
       as.list()
+  }
+  
+  # capitalize lifeform values and remove ending s to conform to enum
+  if(value_name == "lifeForm") {
+    value <- value |> 
+      str_remove("s$") |>
+      str_to_upper()
+  }
+  
+  # covnert atmosphere to ENUM values
+  if(value_name == "atmosphere") {
+    value <- value |>
+      str_remove_all("\\(") |>
+      str_remove_all("\\)") |>
+      str_remove_all("\\s+") |>
+      str_to_upper() |>
+      str_replace("POISONOUS$", "POISON") |>
+      str_replace("FLAMMABLE$", "FLAME")
+    
   }
   
   return(value)
@@ -196,20 +219,20 @@ read_landmass <- function(landmass_xml) {
   name <- str_extract(landmass_str, "^[^\\(]+") |> str_trim()
   capital <- str_extract(landmass_str, "(?<=\\().*?(?=\\))")
   
-  if(is.na(source) || source == "noncanon") {
-    if(is.na(capital)) {
-      return(list(name = name))
-    } else {
-      return(list(name = name, capital = capital))
-    }
+  #if(is.na(source) || source == "noncanon") {
+  if(is.na(capital)) {
+    return(list(name = name))
   } else {
-    if(is.na(capital)) {
-      return(list(name = list(source = source, value = name)))
-    } else {
-      return(list(name = list(source = source, value = name),
-                  capital = list(source = source, value = capital)))
-    }
+    return(list(name = name, capital = capital))
   }
+  #} else {
+  #  if(is.na(capital)) {
+  #    return(list(name = list(source = source, value = name)))
+  #  } else {
+  #    return(list(name = list(source = source, value = name),
+  #                capital = list(source = source, value = capital)))
+  #  }
+  #}
 }
 
 # subfunction for reading in satellite data
