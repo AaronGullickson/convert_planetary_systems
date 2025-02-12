@@ -3,13 +3,14 @@
 
 
 # key values in this vector should be split into a source and value pair
-values_sourceable <- c("ring", "sysPos", "diameter", "dayLength", "temperature",
-                       "water", "smallMoons", "gravity", "density", 
-                       "yearLength", "spectralType", "name", "type", 
-                       "pressure", "atmosphere", "composition", "lifeForm",
-                       "size", "faction", "population", "hpg", 
-                       "socioIndustrial", "nadirCharge", "zenithCharge",
-                       "hiringHall")
+values_sourceable <- c("name") # for testing just name
+# values_sourceable <- c("ring", "sysPos", "diameter", "dayLength", "temperature",
+#                        "water", "smallMoons", "gravity", "density", 
+#                        "yearLength", "spectralType", "name", "type", 
+#                        "pressure", "atmosphere", "composition", "lifeForm",
+#                        "size", "faction", "population", "hpg", 
+#                        "socioIndustrial", "nadirCharge", "zenithCharge",
+#                        "hiringHall")
 
 # put key values here that need to be transformed for certain values that 
 # show up in events
@@ -26,10 +27,6 @@ planet_optional <- c("pressure", "atmosphere", "composition", "gravity",
                      "diameter", "density", "dayLength", "yearLength",
                      "temperature", "water", "lifeForm", "desc", "ring",
                      "smallMoons")
-
-atmo_converter <- c(
-  ""
-)
 
 # read an individual calue from xml node and determine how to display it in yaml
 read_value <- function(xml_data, value_name) {
@@ -80,21 +77,20 @@ read_value <- function(xml_data, value_name) {
     
   }
   
-  return(value)
-  
-  # do we need to split this into source and value?
-  # if(value_name %in% values_sourceable) {
-  #   source <- xml_attr(value_node, "source")
-  #   if(is.na(source) || source == "noncanon") {
-  #     # if there is no source or its noncanon, we treat that as default
-  #     # and do not write it out in full
-  #     return(value)
-  #   }
-  #   return(list(source = source, value = value))
-  # } else {
-  #   return(value)
-  # }
-  
+  #do we need to split this into source and value?
+  if(value_name %in% values_sourceable) {
+    source <- xml_attr(value_node, "source")
+    if(is.na(source) || source == "noncanon") {
+      # if there is no source or its noncanon, we treat that as default
+      # and do not add a source key
+      return(list(value = value))
+    } else {
+      return(list(source = source, value = value))
+    }
+  } else {
+    # just a simple primitive type returned since its not sourceable
+    return(value)
+  }
 }
 
 # the primary function
