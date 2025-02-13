@@ -60,7 +60,8 @@ read_value <- function(xml_data, value_name) {
   if(value_name == "lifeForm") {
     value <- value |> 
       str_remove("s$") |>
-      str_to_upper()
+      str_to_upper() |>
+      str_replace("^AMPH$", "AMPHIBIAN")
   }
   
   # covnert atmosphere to ENUM values
