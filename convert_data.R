@@ -13,7 +13,7 @@ source("functions.R")
 
 # Remove prior data -------------------------------------------------------
 
-list.files(here("output", "planetary_systems"), 
+list.files(here("output", "planetary_systems", "canon_systems"), 
            full.names = TRUE) |>
   file.remove()
 
@@ -49,9 +49,16 @@ all_system_name_change <- set_names(all_system_name_change,
 
 # Test Case ---------------------------------------------------------------
 
-#id <- "Graham IV"
+#id <- "Galatea"
 #psystem <- read_planetary_system(id)
-#cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12))
+#cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12),
+#    file = "output/planetary_systems/canon_systems/Galatea.yml")
+#id <- "Terra"
+#psystem <- read_planetary_system(id)
+#cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12),
+#    file = "output/planetary_systems/canon_systems/Terra.yml")
+
+
 
 # Process planetary systems -----------------------------------------------
 
@@ -64,7 +71,7 @@ names(all_systems) |>
     result <- read_planetary_system(x) |>
       as.yaml(indent.mapping.sequence = TRUE, precision = 12)
     
-    file_name <- paste("output/planetary_systems/",
+    file_name <- paste("output/planetary_systems/canon_systems/",
                        make_clean_names(x, case = "big_camel"),
                        ".yml",
                        sep = "")
