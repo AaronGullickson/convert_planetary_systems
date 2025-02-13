@@ -3,14 +3,12 @@
 
 
 # key values in this vector should be split into a source and value pair
-values_sourceable <- c("name") # for testing just name
-# values_sourceable <- c("ring", "sysPos", "diameter", "dayLength", "temperature",
-#                        "water", "smallMoons", "gravity", "density", 
-#                        "yearLength", "spectralType", "name", "type", 
-#                        "pressure", "atmosphere", "composition", "lifeForm",
-#                        "size", "faction", "population", "hpg", 
-#                        "socioIndustrial", "nadirCharge", "zenithCharge",
-#                        "hiringHall")
+values_sourceable <- c("name", "dayLength", "yearLength", "sysPos", "diameter",
+                        "density", "smallMoons", "gravity", "ring", "size",
+                       "temperature", "water", "composition", "population",
+                       "faction", "nadirCharge", "zenithCharge", "type",
+                       "atmosphere", "lifeForm", "hpg", "hiringHall",
+                       "socioIndustrial", "pressure", "spectralType")
 
 # put key values here that need to be transformed for certain values that 
 # show up in events
@@ -228,20 +226,24 @@ read_landmass <- function(landmass_xml) {
   name <- str_extract(landmass_str, "^[^\\(]+") |> str_trim()
   capital <- str_extract(landmass_str, "(?<=\\().*?(?=\\))")
   
-  #if(is.na(source) || source == "noncanon") {
-  if(is.na(capital)) {
-    return(list(name = name))
+  if(is.na(source) || source == "noncanon") {
+    if(is.na(capital)) {
+      return(list(name = list(value = name)))
+    } else if(is.na(name)) {
+      return(list(capital = list(value = capital)))
+    } else {
+      return(list(name = list(value = name), list(value = capital)))
+    }
   } else {
-    return(list(name = name, capital = capital))
+    if(is.na(capital)) {
+      return(list(name = list(source = source, value = name)))
+    } else if(is.na(name)) {
+      return(list(capital = list(source = source, value = capital)))
+    }  else {
+      return(list(name = list(source = source, value = name),
+                  capital = list(source = source, value = capital)))
+    }
   }
-  #} else {
-  #  if(is.na(capital)) {
-  #    return(list(name = list(source = source, value = name)))
-  #  } else {
-  #    return(list(name = list(source = source, value = name),
-  #                capital = list(source = source, value = capital)))
-  #  }
-  #}
 }
 
 # subfunction for reading in satellite data
