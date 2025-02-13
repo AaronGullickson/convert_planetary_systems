@@ -232,7 +232,8 @@ read_landmass <- function(landmass_xml) {
     } else if(is.na(name)) {
       return(list(capital = list(value = capital)))
     } else {
-      return(list(name = list(value = name), list(value = capital)))
+      return(list(name = list(value = name), 
+                  capital = list(value = capital)))
     }
   } else {
     if(is.na(capital)) {
