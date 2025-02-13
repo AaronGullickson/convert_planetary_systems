@@ -11,7 +11,8 @@ packages = c(
   "tidyverse", # tidyverse and friends
   "xml2", # for reading in xml
   "yaml", # for writing out yaml
-  "janitor" # for cleaning file names
+  "janitor", # for cleaning file names
+  "lubridate" # for cleaning up dates
 )
 
 package.check <- lapply(packages, FUN = function(x) {

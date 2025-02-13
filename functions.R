@@ -89,6 +89,11 @@ read_value <- function(xml_data, value_name) {
       str_replace("^NORMAL$", "STANDARD")
   }
   
+  # try to clean up date values
+  if(value_name == "date") {
+    value <- as.character(as_date(value))
+  }
+  
   #do we need to split this into source and value?
   if(value_name %in% values_sourceable) {
     source <- xml_attr(value_node, "source")
