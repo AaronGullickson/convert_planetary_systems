@@ -111,10 +111,14 @@ read_value <- function(xml_data, value_name) {
 }
 
 # the primary function
-read_planetary_system <- function(id) {
+read_planetary_system <- function(id, connector = FALSE) {
   
   # retrieve the system information
-  system_xml <- all_systems[[id]]
+  if(connector) {
+    system_xml <- connectors[[id]]
+  } else {
+    system_xml <- all_systems[[id]]
+  }
   system_event_xml <- all_system_events[[id]]
   system_name_change_xml <- all_system_name_change[[id]]
 
@@ -124,14 +128,20 @@ read_planetary_system <- function(id) {
     sucsId = read_value(system_xml, "sucsId"),
     xcood = read_value(system_xml, "xcood"),
     ycood = read_value(system_xml, "ycood"),
-    spectralType = read_value(system_xml, "spectralType"),
-    primarySlot = read_value(system_xml, "primarySlot")
+    spectralType = read_value(system_xml, "spectralType")
   )
   
+  # if not a connector add a primarySlot
+  if(!connector) {
+    planetary_system$primarySlot <- read_value(system_xml, "primarySlot")
+  }
+  
   # add system-level events
-  system_events <- map(xml_find_all(system_event_xml, "event"), read_event)
-  if(!is_empty(system_events)) {
-    planetary_system$event <- system_events
+  if(!is.null(system_event_xml)) {
+    system_events <- map(xml_find_all(system_event_xml, "event"), read_event)
+    if(!is_empty(system_events)) {
+      planetary_system$event <- system_events
+    }
   }
   
   # insert planet events into planet xml
