@@ -27,7 +27,7 @@ planet_optional <- c("pressure", "atmosphere", "composition", "gravity",
                      "smallMoons")
 
 # read an individual calue from xml node and determine how to display it in yaml
-read_value <- function(xml_data, value_name) {
+read_value <- function(xml_data, value_name, year = NULL) {
   
   value_node <- xml_data |>
     xml_find_first(value_name)
@@ -101,9 +101,24 @@ read_value <- function(xml_data, value_name) {
     value <- as.character(as_date(value))
   }
   
+  source <- xml_attr(value_node, "source")
+  
+  # hack alert - we need to fix up population values for some canon entries
+  # that are not recorded as such. 
+  if(value_name == "population" & !is.null(year)) {
+    if(year == 2750 & value %in% pop2750) {
+      source <- "Star League Handbook, original"
+    }
+    if((year == 3025 & value %in% pop3025) |
+       (year == 3067 & value %in% pop3067) |
+       (year == 3079 & value %in% pop3079) |
+       (year == 3145 & value %in% pop3145)) {
+      source <- "canon"
+    }
+  }
+  
   #do we need to split this into source and value?
   if(value_name %in% values_sourceable) {
-    source <- xml_attr(value_node, "source")
     if(is.na(source) || source == "noncanon") {
       # if there is no source or its noncanon, we treat that as default
       # and do not add a source key
@@ -230,10 +245,17 @@ read_event <- function(events_xml) {
   # get name of each lement
   element_names <- xml_name(xml_children(events_xml))
   
+  # get year to feed into read_value function
+  year <- events_xml |>
+    xml_find_first("date") |>
+    xml_text() |>
+    as_date() |>
+    year()
+  
   # read in values to a list
   events <- list()
   for(element_name in element_names) {
-    events[[element_name]] <- read_value(events_xml, element_name)
+    events[[element_name]] <- read_value(events_xml, element_name, year)
   }
   
   return(events)
