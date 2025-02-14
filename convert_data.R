@@ -58,14 +58,17 @@ connectors <- set_names(connectors,
 
 # Test Case ---------------------------------------------------------------
 
-#id <- "O'Fallon"
-#psystem <- read_planetary_system(id)
-#cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12),
-#    file = paste("output/planetary_systems/canon_systems/", 
-#                 make_clean_names(id), 
-#                 ".yml", sep=""))
-
-
+# put in test ids here. Always include Terra if you want to run it in MekHQ.
+# Galatea is also recommended because that is where your starting system
+# will be as a merc at default dates
+# test_ids <- c("Terra","Galatea")
+# for(id in test_ids) {
+#   psystem <- read_planetary_system(id)
+#   cat(as.yaml(psystem, indent.mapping.sequence = TRUE, precision = 12),
+#       file = paste("output/planetary_systems/canon_systems/", 
+#                    make_clean_names(id, case = "big_camel), 
+#                    ".yml", sep=""))
+# }
 
 # Process planetary systems -----------------------------------------------
 
@@ -98,7 +101,7 @@ names(all_systems) |>
 ## Connector Systems ##
 
 #check to make sure cleaning won't produce dupes
-y <- make_clean_names(names(connectors), 
+y <- make_clean_names(names(connectors),
                       allow_dupes = TRUE,
                       case = "upper_lower")
 sum(duplicated(y))
@@ -107,16 +110,16 @@ names(connectors) |>
   map(function(x) {
     result <- read_planetary_system(x, connector = TRUE) |>
       as.yaml(indent.mapping.sequence = TRUE, precision = 12)
-    
+
     file_name <- paste("output/planetary_systems/connector_systems/",
                        make_clean_names(x, case = "upper_lower"),
                        ".yml",
                        sep = "")
-    
+
     file <- file(file_name,
                  "w",
                  encoding = "UTF-8")
-    
+
     cat(result, file = file, sep = "")
     close(file)
   })
