@@ -91,6 +91,13 @@ read_value <- function(xml_data, value_name) {
   
   # try to clean up date values
   if(value_name == "date") {
+    # the namechange data has starting values of "0000-01-01" which
+    # lubridate handles find, but outputs as "0-01-01" which Jackson
+    # does not like. We will change these to "2108-12-05" which is the
+    # date of the Tau Ceti launch.
+    value <- value |>
+      str_replace("^0000-01-01", "2108-12-05")
+    
     value <- as.character(as_date(value))
   }
   
