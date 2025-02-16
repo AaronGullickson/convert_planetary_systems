@@ -122,7 +122,7 @@ read_value <- function(xml_data, value_name, year = NULL) {
     if(is.na(source) || source == "noncanon") {
       # if there is no source or its noncanon, we treat that as default
       # and do not add a source key
-      return(list(value = value))
+      return(value)
     } else {
       return(list(source = source, value = value))
     }
@@ -273,12 +273,11 @@ read_landmass <- function(landmass_xml) {
   
   if(is.na(source) || source == "noncanon") {
     if(is.na(capital)) {
-      return(list(name = list(value = name)))
+      return(list(name = name))
     } else if(is.na(name)) {
-      return(list(capital = list(value = capital)))
+      return(list(capital = capital))
     } else {
-      return(list(name = list(value = name), 
-                  capital = list(value = capital)))
+      return(list(name = name, capital = capital))
     }
   } else {
     if(is.na(capital)) {
